@@ -1,0 +1,87 @@
+version: '3.8'
+
+services:
+  # =========================================================================
+  # 1. POSTGRESQL 16 ENTERPRISE DATABASE
+  # =========================================================================
+  postgres:
+    image: postgres:16-alpine
+    container_name: adyapan-nexus-postgres
+    restart: always
+    environment:
+      POSTGRES_USER: adyapan_admin
+      POSTGRES_PASSWORD: AdyapanNexusSecurePassword2026!
+      POSTGRES_DB: adyapan_nexus_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U adyapan_admin -d adyapan_nexus_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - adyapan_internal_net
+
+  # =========================================================================
+  # 2. REDIS 7 ULTRA-FAST CACHING ENGINE
+  # =========================================================================
+  redis:
+    image: redis:7-alpine
+    container_name: adyapan-nexus-redis
+    restart: always
+    command: redis-server --appendonly yes --requirepass AdyapanRedisCache2026!
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "AdyapanRedisCache2026!", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - adyapan_internal_net
+
+  # =========================================================================
+  # 3. ADYAPAN NEXUS BACKEND GATEWAY
+  # =========================================================================
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: adyapan-nexus-backend
+    restart: always
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PORT: 5000
+      DATABASE_URL: "postgresql://adyapan_admin:AdyapanNexusSecurePassword2026!@postgres:5432/adyapan_nexus_db?schema=public"
+      REDIS_HOST: "redis"
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: "AdyapanRedisCache2026!"
+      JWT_SECRET: "adyapan_nexus_super_secret_jwt_key_prod_2026_enterprise"
+      CRM_BASE_URL: "https://adyapancrm.in"
+      CRM_ADMIN_EMAIL: "admin@adyapancrm.in"
+      CRM_ADMIN_PASSWORD: "Adyapan@2026"
+      HRMS_BASE_URL: "https://hrms.adyapan.com"
+      HRMS_ADMIN_EMAIL: "admin@hrms.adyapan.com"
+      HRMS_ADMIN_PASSWORD: "HrmsAdyapan@2026"
+      CAREERS_API_URL: "https://carreradyapan.onrender.com/api/applications/manager-stats"
+    ports:
+      - "5000:5000"
+    networks:
+      - adyapan_internal_net
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  adyapan_internal_net:
+    driver: bridge

@@ -1,0 +1,117 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum Role {
+  SUPER_ADMIN
+  ADMIN
+  MANAGER
+  VIEWER
+}
+
+enum ServiceType {
+  CRM
+  HRMS
+  LMS
+  CAREERS
+}
+
+enum ConnectionStatus {
+  CONNECTED
+  DEGRADED
+  DISCONNECTED
+  ERROR
+}
+
+enum NotificationType {
+  INFO
+  WARNING
+  ERROR
+  CRITICAL
+}
+
+model User {
+  id           String      @id @default(uuid())
+  name         String
+  email        String      @unique
+  passwordHash String      @map("password_hash")
+  role         Role        @default(ADMIN)
+  isActive     Boolean     @default(true) @map("is_active")
+  avatar       String?
+  department   String?
+  createdAt    DateTime    @default(now()) @map("created_at")
+  updatedAt    DateTime    @updatedAt @map("updated_at")
+
+  sessions     Session[]
+  auditLogs    AuditLog[]
+
+  @@map("users")
+}
+
+model Session {
+  id           String    @id @default(uuid())
+  userId       String    @map("user_id")
+  tokenHash    String    @map("token_hash")
+  userAgent    String?   @map("user_agent")
+  ipAddress    String?   @map("ip_address")
+  expiresAt    DateTime  @map("expires_at")
+  createdAt    DateTime  @default(now()) @map("created_at")
+
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model Setting {
+  id          String   @id @default(uuid())
+  key         String   @unique
+  value       String
+  description String?
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("settings")
+}
+
+model ExternalConnection {
+  id          String           @id @default(uuid())
+  service     ServiceType      @unique
+  status      ConnectionStatus @default(DISCONNECTED)
+  endpoint    String?
+  lastSync    DateTime?        @map("last_sync")
+  tokenExpiry DateTime?        @map("token_expiry")
+  metadata    Json?
+  updatedAt   DateTime         @updatedAt @map("updated_at")
+
+  @@map("external_connections")
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  action    String
+  userId    String?  @map("user_id")
+  ip        String?
+  userAgent String?  @map("user_agent")
+  details   Json?
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@map("audit_logs")
+}
+
+model Notification {
+  id        String           @id @default(uuid())
+  title     String
+  message   String
+  type      NotificationType @default(INFO)
+  isRead    Boolean          @default(false) @map("is_read")
+  service   ServiceType?
+  createdAt DateTime         @default(now()) @map("created_at")
+
+  @@map("notifications")
+}
