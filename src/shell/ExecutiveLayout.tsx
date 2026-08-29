@@ -13,37 +13,37 @@ export const ExecutiveLayout: React.FC = () => {
     switch (activeTab) {
       case 'crm':
         return (
-          <div className="h-[calc(100vh-64px)] p-2 sm:p-4">
+          <div className="h-[calc(100dvh-64px)] p-1 sm:p-3 md:p-4">
             <AppFrame app={APPLICATIONS.crm} />
           </div>
         );
       case 'lms':
         return (
-          <div className="h-[calc(100vh-64px)] p-2 sm:p-4">
+          <div className="h-[calc(100dvh-64px)] p-1 sm:p-3 md:p-4">
             <AppFrame app={APPLICATIONS.lms} />
           </div>
         );
       case 'hrms':
         return (
-          <div className="h-[calc(100vh-64px)] p-2 sm:p-4">
+          <div className="h-[calc(100dvh-64px)] p-1 sm:p-3 md:p-4">
             <AppFrame app={APPLICATIONS.hrms} />
           </div>
         );
       case 'careers':
         return (
-          <div className="h-[calc(100vh-64px)] p-2 sm:p-4">
+          <div className="h-[calc(100dvh-64px)] p-1 sm:p-3 md:p-4">
             <AppFrame app={APPLICATIONS.careers} />
           </div>
         );
       case 'settings':
         return (
-          <div className="h-[calc(100vh-64px)] p-2 sm:p-4 overflow-y-auto">
+          <div className="h-[calc(100dvh-64px)] p-1 sm:p-3 md:p-4 overflow-y-auto">
             <SettingsPage />
           </div>
         );
       default:
         return (
-          <div className="h-[calc(100vh-64px)] p-2 sm:p-4">
+          <div className="h-[calc(100dvh-64px)] p-1 sm:p-3 md:p-4">
             <AppFrame app={APPLICATIONS.crm} />
           </div>
         );

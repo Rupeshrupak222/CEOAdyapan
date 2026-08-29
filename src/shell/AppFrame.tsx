@@ -87,17 +87,17 @@ export const AppFrame: React.FC<AppFrameProps> = ({ app }) => {
     <div className={`flex flex-col w-full bg-slate-950 overflow-hidden relative transition-all duration-300 ${
       isFullscreen
         ? 'fixed inset-0 z-[99999] w-screen h-screen m-0 p-0 rounded-none border-none'
-        : 'h-full rounded-2xl border border-slate-800 shadow-2xl'
+        : 'h-full rounded-xl sm:rounded-2xl border border-slate-800 shadow-2xl'
     }`}>
       {/* ========================================================================= */}
-      {/* 1. TOP UTILITY APP TOOLBAR (48px) */}
+      {/* 1. TOP UTILITY APP TOOLBAR (Responsive across mobile & desktop) */}
       {/* ========================================================================= */}
-      <div className="h-12 px-4 bg-slate-900/95 backdrop-blur-md border-b border-slate-800 flex items-center justify-between gap-3 shrink-0 select-none z-30">
+      <div className="min-h-12 py-1.5 px-2.5 sm:px-4 bg-slate-900/95 backdrop-blur-md border-b border-slate-800 flex flex-wrap sm:flex-nowrap items-center justify-between gap-2 shrink-0 select-none z-30">
         {/* Left: App Identity & Address Badge */}
-        <div className="flex items-center gap-2 min-w-0">
-          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-800 border border-slate-700/60 text-xs font-mono text-slate-300">
-            <Lock className="w-3 h-3 text-emerald-400" />
-            <span className="truncate max-w-[140px] sm:max-w-[220px] font-medium text-[11px] text-slate-400">
+        <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
+          <div className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-slate-800 border border-slate-700/60 text-xs font-mono text-slate-300">
+            <Lock className="w-3 h-3 text-emerald-400 shrink-0" />
+            <span className="truncate max-w-[100px] sm:max-w-[180px] md:max-w-[240px] font-medium text-[11px] text-slate-400">
               {app.externalUrl}
             </span>
           </div>
@@ -110,21 +110,21 @@ export const AppFrame: React.FC<AppFrameProps> = ({ app }) => {
 
         {/* Center: Executive 1-Click Copy Chips */}
         {app.credentials && (
-          <div className="flex items-center gap-1.5 bg-slate-950/90 px-3 py-1 rounded-xl border border-slate-800 text-[11px] font-mono shadow-inner">
-            <KeyRound className="w-3.5 h-3.5 text-orange-400 shrink-0" />
+          <div className="flex items-center gap-1 sm:gap-1.5 bg-slate-950/90 px-2 sm:px-3 py-1 rounded-xl border border-slate-800 text-[11px] font-mono shadow-inner">
+            <KeyRound className="w-3 h-3 text-orange-400 shrink-0" />
             
             {/* Copy Email / Username Button */}
             <button
               onClick={() => copyToClipboard(app.credentials.email, 'email')}
               title="Click to copy ID/Email"
-              className={`flex items-center gap-1.5 px-2 py-0.5 rounded-lg font-bold transition-all cursor-pointer ${
+              className={`flex items-center gap-1 px-1.5 sm:px-2 py-0.5 rounded-lg font-bold transition-all cursor-pointer ${
                 copiedField === 'email'
                   ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40'
                   : 'text-slate-300 hover:text-white hover:bg-slate-800'
               }`}
             >
-              <span className="truncate max-w-[130px] sm:max-w-[180px]">{app.credentials.email}</span>
-              {copiedField === 'email' ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3 text-slate-400" />}
+              <span className="truncate max-w-[90px] sm:max-w-[140px] md:max-w-[180px]">{app.credentials.email}</span>
+              {copiedField === 'email' ? <Check className="w-3 h-3 text-emerald-400 shrink-0" /> : <Copy className="w-3 h-3 text-slate-400 shrink-0" />}
             </button>
 
             <span className="text-slate-600 font-bold">•</span>
@@ -133,25 +133,25 @@ export const AppFrame: React.FC<AppFrameProps> = ({ app }) => {
             <button
               onClick={() => copyToClipboard(app.credentials.password, 'password')}
               title="Click to copy Password"
-              className={`flex items-center gap-1.5 px-2 py-0.5 rounded-lg font-bold transition-all cursor-pointer ${
+              className={`flex items-center gap-1 px-1.5 sm:px-2 py-0.5 rounded-lg font-bold transition-all cursor-pointer ${
                 copiedField === 'password'
                   ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40'
                   : 'text-slate-400 hover:text-white hover:bg-slate-800'
               }`}
             >
-              <span>{copiedField === 'password' ? 'Copied Password!' : '••••••••'}</span>
-              {copiedField === 'password' ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3 text-slate-400" />}
+              <span>{copiedField === 'password' ? 'Copied!' : '••••••••'}</span>
+              {copiedField === 'password' ? <Check className="w-3 h-3 text-emerald-400 shrink-0" /> : <Copy className="w-3 h-3 text-slate-400 shrink-0" />}
             </button>
           </div>
         )}
 
         {/* Right: Frame Controls */}
-        <div className="flex items-center gap-1.5 sm:gap-2">
+        <div className="flex items-center gap-1 sm:gap-2">
           {/* Reload Frame Button */}
           <button
             onClick={() => reloadApp(app.id)}
             title="Reload Application Frame"
-            className="p-2 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 transition-all cursor-pointer"
+            className="p-1.5 sm:p-2 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 transition-all cursor-pointer"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin text-orange-400' : ''}`} />
           </button>
@@ -172,7 +172,7 @@ export const AppFrame: React.FC<AppFrameProps> = ({ app }) => {
             target="_blank"
             rel="noopener noreferrer"
             title="Launch in Dedicated Browser Tab"
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-orange-600 hover:bg-orange-500 text-white font-bold text-xs shadow-md transition-all cursor-pointer"
+            className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg bg-orange-600 hover:bg-orange-500 text-white font-bold text-xs shadow-md transition-all cursor-pointer"
           >
             <ExternalLink className="w-3.5 h-3.5" />
             <span className="hidden sm:inline">Open Tab</span>
@@ -182,7 +182,7 @@ export const AppFrame: React.FC<AppFrameProps> = ({ app }) => {
           <button
             onClick={toggleFullscreen}
             title={isFullscreen ? 'Exit Fullscreen' : 'Enter Fullscreen'}
-            className="p-2 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 transition-all cursor-pointer"
+            className="p-1.5 sm:p-2 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 transition-all cursor-pointer"
           >
             {isFullscreen ? (
               <Minimize2 className="w-3.5 h-3.5 text-orange-400" />
@@ -194,21 +194,21 @@ export const AppFrame: React.FC<AppFrameProps> = ({ app }) => {
       </div>
 
       {/* ========================================================================= */}
-      {/* 2. IFRAME VIEWPORT (Expands to fill 100% remaining height) */}
+      {/* 2. IFRAME VIEWPORT (100% Mobile & Desktop Expansion) */}
       {/* ========================================================================= */}
       <div className="relative flex-1 w-full min-h-0 bg-slate-900 overflow-hidden">
         {/* Loading Spinner */}
         {isLoading && (
-          <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-slate-950/80 backdrop-blur-sm p-6 text-center">
-            <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-slate-800 to-slate-700 border border-slate-700 flex items-center justify-center shadow-xl mb-4 relative">
-              <RefreshCw className="w-6 h-6 text-orange-500 animate-spin" />
+          <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-slate-950/80 backdrop-blur-sm p-4 sm:p-6 text-center">
+            <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-tr from-slate-800 to-slate-700 border border-slate-700 flex items-center justify-center shadow-xl mb-3 sm:mb-4 relative">
+              <RefreshCw className="w-5 h-5 sm:w-6 sm:h-6 text-orange-500 animate-spin" />
               <span className="absolute -top-1 -right-1 w-3 h-3 bg-emerald-500 rounded-full border-2 border-slate-950" />
             </div>
 
-            <h3 className="text-base font-bold text-white mb-1">
+            <h3 className="text-sm sm:text-base font-bold text-white mb-1">
               Connecting to {app.name}...
             </h3>
-            <p className="text-xs text-slate-400 max-w-sm">
+            <p className="text-xs text-slate-400 max-w-xs sm:max-w-sm">
               Establishing live session with {app.externalUrl}
             </p>
           </div>
