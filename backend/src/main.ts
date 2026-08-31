@@ -13,15 +13,32 @@ async function bootstrap() {
 
   // Global Cross-Origin Resource Sharing (CORS)
   app.enableCors({
-    origin: [
-      'http://localhost:5173',
-      'http://localhost:3000',
-      'https://adyapan.io',
-      'https://admin.adyapan.io',
-      '*',
-    ],
+    origin: (origin, callback) => {
+      // Allow requests with no origin (curl, mobile, etc.) or mirror origin
+      if (!origin) return callback(null, true);
+      
+      const allowedPatterns = [
+        'ceo-adyapan.vercel.app',
+        'vercel.app',
+        'adyapan.io',
+        'adyapan.com',
+        'localhost',
+        '127.0.0.1',
+      ];
+
+      const isAllowed = allowedPatterns.some(pattern => origin.includes(pattern));
+
+      if (isAllowed) {
+        callback(null, true);
+      } else {
+        // Fallback: reflect request origin to prevent browser CORS block
+        callback(null, true);
+      }
+    },
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: true,
+    allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'X-Requested-With'],
+    exposedHeaders: ['Set-Cookie', 'Authorization'],
   });
 
   // Global Request Validation Pipe

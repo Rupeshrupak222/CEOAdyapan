@@ -1,7 +1,8 @@
 // Native zero-dependency API Client for Adyapan Nexus Gateway
 
-const API_BASE_URL =
+const RAW_BASE_URL =
   ((import.meta as any).env?.VITE_API_URL as string) || 'http://localhost:5000';
+const API_BASE_URL = RAW_BASE_URL.replace(/\/+$/, '');
 
 async function request<T = any>(
   endpoint: string,
