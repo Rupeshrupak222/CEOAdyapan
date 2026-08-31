@@ -137,8 +137,8 @@ export const LoginPage: React.FC = () => {
   const { login } = useAuthStore();
   const { addToast } = useUIStore();
 
-  const [email, setEmail] = useState('admin@adyapan.io');
-  const [password, setPassword] = useState('Adyapan@2026');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
@@ -293,10 +293,13 @@ export const LoginPage: React.FC = () => {
       } else {
         setIsLoading(false);
         setShowExecutiveReveal(false);
+        const errorMsg = res.error?.toLowerCase().includes('offline')
+          ? 'Backend Server is unreachable. Please check backend connection.'
+          : 'Invalid email or password. Please check your credentials and try again.';
         addToast({
           type: 'error',
-          title: 'Authentication Denied',
-          message: res.error || 'Invalid credentials or Backend Server is unreachable.',
+          title: 'Invalid Credentials',
+          message: errorMsg,
         });
       }
     } catch (err: any) {
@@ -304,8 +307,8 @@ export const LoginPage: React.FC = () => {
       setShowExecutiveReveal(false);
       addToast({
         type: 'error',
-        title: 'Access Denied',
-        message: err?.message || 'Unauthorized executive credentials.',
+        title: 'Invalid Credentials',
+        message: 'Invalid email or password. Please verify and try again.',
       });
     }
   };
@@ -569,7 +572,6 @@ export const LoginPage: React.FC = () => {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="admin@adyapan.io"
                   className="w-full pl-11 pr-4 py-3.5 rounded-2xl bg-slate-50 border border-slate-300 text-slate-900 placeholder-slate-400 text-xs outline-none focus:border-amber-500 focus:bg-white focus:ring-4 focus:ring-amber-500/15 transition-all shadow-xs"
                 />
               </div>
@@ -600,7 +602,6 @@ export const LoginPage: React.FC = () => {
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Enter security key"
                   className="w-full pl-11 pr-11 py-3.5 rounded-2xl bg-slate-50 border border-slate-300 text-slate-900 placeholder-slate-400 text-xs outline-none focus:border-amber-500 focus:bg-white focus:ring-4 focus:ring-amber-500/15 transition-all shadow-xs"
                 />
                 <button
