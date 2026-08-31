@@ -17,12 +17,19 @@ export default async function handler(req: Request) {
 
   const url = new URL(req.url);
   const searchParams = url.searchParams;
-  const rawPath = searchParams.get('path') || '';
-  const subPath = rawPath.startsWith('/') ? rawPath : `/${rawPath}`;
+  
+  // Determine target path
+  let targetPath = searchParams.get('path') || url.pathname;
+  if (targetPath === '/crm-frame' || targetPath === '/crm-proxy') {
+    targetPath = '/';
+  }
+  if (!targetPath.startsWith('/')) {
+    targetPath = `/${targetPath}`;
+  }
 
-  const targetUrl = new URL(subPath === '/' ? '' : subPath, 'https://adyapancrm.in');
+  const targetUrl = new URL(targetPath, 'https://adyapancrm.in');
 
-  // Copy any other search parameters
+  // Forward query parameters (excluding the internal 'path' query param)
   searchParams.forEach((val, key) => {
     if (key !== 'path') {
       targetUrl.searchParams.set(key, val);
@@ -32,25 +39,32 @@ export default async function handler(req: Request) {
   const forwardHeaders = new Headers();
   req.headers.forEach((value, key) => {
     const lowerKey = key.toLowerCase();
-    if (!['host', 'connection', 'content-length'].includes(lowerKey)) {
+    // Exclude hop-by-hop and host headers
+    if (!['host', 'connection'].includes(lowerKey)) {
       forwardHeaders.set(key, value);
     }
   });
 
   forwardHeaders.set('host', 'adyapancrm.in');
-  forwardHeaders.set('referer', 'https://adyapancrm.in/');
   forwardHeaders.set('origin', 'https://adyapancrm.in');
-  forwardHeaders.set(
-    'user-agent',
-    req.headers.get('user-agent') ||
+  forwardHeaders.set('referer', 'https://adyapancrm.in/');
+  if (!forwardHeaders.has('user-agent')) {
+    forwardHeaders.set(
+      'user-agent',
       'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36'
-  );
+    );
+  }
 
   try {
+    const body =
+      req.method !== 'GET' && req.method !== 'HEAD'
+        ? await req.arrayBuffer()
+        : undefined;
+
     const upstreamRes = await fetch(targetUrl.toString(), {
       method: req.method,
       headers: forwardHeaders,
-      body: req.method !== 'GET' && req.method !== 'HEAD' ? req.body : undefined,
+      body,
       redirect: 'manual',
     });
 
@@ -58,7 +72,7 @@ export default async function handler(req: Request) {
 
     upstreamRes.headers.forEach((val, key) => {
       const lower = key.toLowerCase();
-      // Strip framing restriction headers
+      // Strip framing restriction and CSP headers
       if (
         lower === 'x-frame-options' ||
         lower === 'content-security-policy' ||
@@ -66,7 +80,40 @@ export default async function handler(req: Request) {
       ) {
         return;
       }
+      // Strip set-cookie here as we will process it separately
+      if (lower === 'set-cookie') {
+        return;
+      }
       responseHeaders.set(key, val);
+    });
+
+    // Rewrite redirects to stay within the same origin
+    const location = upstreamRes.headers.get('location');
+    if (location) {
+      const rewrittenLocation = location
+        .replace(/^https?:\/\/adyapancrm\.in/i, '')
+        .replace(/^\/crm-frame/i, '');
+      responseHeaders.set('location', rewrittenLocation || '/');
+    }
+
+    // Process and rewrite cookies for iframe compatibility
+    const rawCookies: string[] = [];
+    if (typeof (upstreamRes.headers as any).getSetCookie === 'function') {
+      rawCookies.push(...(upstreamRes.headers as any).getSetCookie());
+    } else {
+      const single = upstreamRes.headers.get('set-cookie');
+      if (single) rawCookies.push(single);
+    }
+
+    rawCookies.forEach((cookieStr) => {
+      let clean = cookieStr
+        .replace(/Domain=[^;]+;?\s*/gi, '')
+        .replace(/SameSite=[^;]+;?\s*/gi, '')
+        .replace(/Secure;?\s*/gi, '')
+        .trim();
+      if (!clean.endsWith(';')) clean += ';';
+      clean += ' SameSite=None; Secure; Path=/';
+      responseHeaders.append('Set-Cookie', clean);
     });
 
     responseHeaders.set('Access-Control-Allow-Origin', '*');
@@ -74,33 +121,18 @@ export default async function handler(req: Request) {
     responseHeaders.set('Access-Control-Allow-Headers', '*');
     responseHeaders.set('Access-Control-Allow-Credentials', 'true');
 
-    // If HTML, inject base href and script to prevent breaking out
-    const contentType = upstreamRes.headers.get('content-type') || '';
-    if (contentType.includes('text/html')) {
-      let html = await upstreamRes.text();
-      if (!html.includes('<base')) {
-        html = html.replace(
-          /<head>/i,
-          '<head><base href="https://adyapancrm.in/" />'
-        );
-      }
-      return new Response(html, {
-        status: upstreamRes.status,
-        headers: responseHeaders,
-      });
-    }
-
     return new Response(upstreamRes.body, {
       status: upstreamRes.status,
+      statusText: upstreamRes.statusText,
       headers: responseHeaders,
     });
   } catch (error: any) {
     return new Response(
       `<html><body style="background:#020617;color:#f8fafc;font-family:sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;">
-        <div style="text-align:center;padding:24px;background:#0f172a;border-radius:12px;border:1px solid #1e293b;">
-          <h2>Unable to proxy CRM session</h2>
-          <p style="color:#94a3b8;">${error?.message || 'Gateway error'}</p>
-          <a href="https://adyapancrm.in" target="_blank" style="display:inline-block;margin-top:12px;padding:8px 16px;background:#ea580c;color:#fff;text-decoration:none;border-radius:8px;font-weight:bold;">Open Adyapan CRM Directly</a>
+        <div style="text-align:center;padding:24px;background:#0f172a;border-radius:12px;border:1px solid #1e293b;max-width:400px;">
+          <h2 style="font-size:18px;margin-bottom:8px;">CRM Connection Error</h2>
+          <p style="color:#94a3b8;font-size:13px;">${error?.message || 'Gateway communication failed'}</p>
+          <a href="https://adyapancrm.in" target="_blank" style="display:inline-block;margin-top:16px;padding:8px 16px;background:#ea580c;color:#fff;text-decoration:none;border-radius:8px;font-weight:bold;font-size:13px;">Open Adyapan CRM Directly</a>
         </div>
       </body></html>`,
       {

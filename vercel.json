@@ -5,12 +5,164 @@
       "destination": "/api/crm-proxy"
     },
     {
+      "source": "/crm-proxy",
+      "destination": "/api/crm-proxy"
+    },
+    {
       "source": "/crm-proxy/(.*)",
       "destination": "/api/crm-proxy?path=$1"
     },
     {
-      "source": "/crm-proxy",
-      "destination": "/api/crm-proxy"
+      "source": "/_next/:match*",
+      "destination": "/api/crm-proxy?path=/_next/:match*"
+    },
+    {
+      "source": "/api/:match*",
+      "destination": "/api/crm-proxy?path=/api/:match*"
+    },
+    {
+      "source": "/admin/:match*",
+      "destination": "/api/crm-proxy?path=/admin/:match*"
+    },
+    {
+      "source": "/admin",
+      "destination": "/api/crm-proxy?path=/admin"
+    },
+    {
+      "source": "/dashboard/:match*",
+      "destination": "/api/crm-proxy?path=/dashboard/:match*"
+    },
+    {
+      "source": "/dashboard",
+      "destination": "/api/crm-proxy?path=/dashboard"
+    },
+    {
+      "source": "/manager/:match*",
+      "destination": "/api/crm-proxy?path=/manager/:match*"
+    },
+    {
+      "source": "/manager",
+      "destination": "/api/crm-proxy?path=/manager"
+    },
+    {
+      "source": "/team-leads/:match*",
+      "destination": "/api/crm-proxy?path=/team-leads/:match*"
+    },
+    {
+      "source": "/team-leads",
+      "destination": "/api/crm-proxy?path=/team-leads"
+    },
+    {
+      "source": "/employee-dashboard/:match*",
+      "destination": "/api/crm-proxy?path=/employee-dashboard/:match*"
+    },
+    {
+      "source": "/employee-dashboard",
+      "destination": "/api/crm-proxy?path=/employee-dashboard"
+    },
+    {
+      "source": "/hr/:match*",
+      "destination": "/api/crm-proxy?path=/hr/:match*"
+    },
+    {
+      "source": "/hr",
+      "destination": "/api/crm-proxy?path=/hr"
+    },
+    {
+      "source": "/tech-team/:match*",
+      "destination": "/api/crm-proxy?path=/tech-team/:match*"
+    },
+    {
+      "source": "/tech-team",
+      "destination": "/api/crm-proxy?path=/tech-team"
+    },
+    {
+      "source": "/operations/:match*",
+      "destination": "/api/crm-proxy?path=/operations/:match*"
+    },
+    {
+      "source": "/operations",
+      "destination": "/api/crm-proxy?path=/operations"
+    },
+    {
+      "source": "/sales/:match*",
+      "destination": "/api/crm-proxy?path=/sales/:match*"
+    },
+    {
+      "source": "/sales",
+      "destination": "/api/crm-proxy?path=/sales"
+    },
+    {
+      "source": "/leads/:match*",
+      "destination": "/api/crm-proxy?path=/leads/:match*"
+    },
+    {
+      "source": "/leads",
+      "destination": "/api/crm-proxy?path=/leads"
+    },
+    {
+      "source": "/students/:match*",
+      "destination": "/api/crm-proxy?path=/students/:match*"
+    },
+    {
+      "source": "/students",
+      "destination": "/api/crm-proxy?path=/students"
+    },
+    {
+      "source": "/payments/:match*",
+      "destination": "/api/crm-proxy?path=/payments/:match*"
+    },
+    {
+      "source": "/payments",
+      "destination": "/api/crm-proxy?path=/payments"
+    },
+    {
+      "source": "/payroll/:match*",
+      "destination": "/api/crm-proxy?path=/payroll/:match*"
+    },
+    {
+      "source": "/payroll",
+      "destination": "/api/crm-proxy?path=/payroll"
+    },
+    {
+      "source": "/managers/:match*",
+      "destination": "/api/crm-proxy?path=/managers/:match*"
+    },
+    {
+      "source": "/managers",
+      "destination": "/api/crm-proxy?path=/managers"
+    },
+    {
+      "source": "/employees/:match*",
+      "destination": "/api/crm-proxy?path=/employees/:match*"
+    },
+    {
+      "source": "/employees",
+      "destination": "/api/crm-proxy?path=/employees"
+    },
+    {
+      "source": "/attendance/:match*",
+      "destination": "/api/crm-proxy?path=/attendance/:match*"
+    },
+    {
+      "source": "/attendance",
+      "destination": "/api/crm-proxy?path=/attendance"
+    },
+    {
+      "source": "/leaves/:match*",
+      "destination": "/api/crm-proxy?path=/leaves/:match*"
+    },
+    {
+      "source": "/leaves",
+      "destination": "/api/crm-proxy?path=/leaves"
+    },
+    {
+      "source": "/newlogo.png",
+      "destination": "/api/crm-proxy?path=/newlogo.png"
+    },
+    {
+      "source": "/login_background.png",
+      "destination": "/api/crm-proxy?path=/login_background.png"
     },
     {
       "source": "/(.*)",
