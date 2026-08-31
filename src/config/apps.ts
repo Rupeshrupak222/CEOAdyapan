@@ -26,7 +26,7 @@ export const APPLICATIONS: Record<string, AppConfig> = {
     shortName: 'CRM',
     description: 'Enterprise Sales Pipeline, Admissions & Deal Tracking System',
     icon: 'Building2',
-    url: 'https://adyapancrm.in',
+    url: '/crm-frame',
     externalUrl: 'https://adyapancrm.in',
     color: 'from-orange-500 to-amber-600',
     badge: 'Sales & Admissions',

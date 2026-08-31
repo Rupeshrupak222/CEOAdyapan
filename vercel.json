@@ -1,6 +1,18 @@
 {
   "rewrites": [
     {
+      "source": "/crm-frame",
+      "destination": "/api/crm-proxy"
+    },
+    {
+      "source": "/crm-proxy/(.*)",
+      "destination": "/api/crm-proxy?path=$1"
+    },
+    {
+      "source": "/crm-proxy",
+      "destination": "/api/crm-proxy"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }
