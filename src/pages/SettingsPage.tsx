@@ -26,7 +26,7 @@ export const SettingsPage: React.FC = () => {
   // Profile Edit State
   const [isEditingProfile, setIsEditingProfile] = useState(false);
   const [name, setName] = useState(user?.name || 'Sai Charan');
-  const [email, setEmail] = useState(user?.email || 'admin@adyapan.io');
+  const [email, setEmail] = useState(user?.email || 'ceo@adyapan.com');
   const [department, setDepartment] = useState(user?.department || 'Executive Leadership');
 
   // Password Change State
@@ -202,7 +202,7 @@ export const SettingsPage: React.FC = () => {
                   <button
                     onClick={() => {
                       setName(user?.name || 'Sai Charan');
-                      setEmail(user?.email || 'admin@adyapan.io');
+                      setEmail(user?.email || 'ceo@adyapan.com');
                       setDepartment(user?.department || 'Executive Leadership');
                       setIsEditingProfile(true);
                     }}
@@ -226,19 +226,23 @@ export const SettingsPage: React.FC = () => {
                 <>
                   {/* User Avatar & Badge */}
                   <div className="flex items-center gap-4">
-                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-orange-500 to-amber-600 text-white font-black text-2xl flex items-center justify-center shadow-lg shadow-orange-500/20">
-                      {user?.name?.[0] || 'A'}
+                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-orange-500 to-amber-600 text-white font-black text-2xl flex items-center justify-center shadow-lg shadow-orange-500/20 overflow-hidden border border-orange-400/20">
+                      {user?.avatar ? (
+                        <img src={user.avatar} alt={user.name} className="w-full h-full object-cover" />
+                      ) : (
+                        user?.name?.[0] || 'A'
+                      )}
                     </div>
                     <div>
                       <h3 className="text-lg font-black text-slate-900 dark:text-white">
                         {user?.name || 'Sai Charan'}
                       </h3>
                       <p className="text-xs font-mono text-slate-500 dark:text-slate-400">
-                        {user?.email || 'admin@adyapan.io'}
+                        {user?.email || 'ceo@adyapan.com'}
                       </p>
                       <span className="mt-1.5 inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md bg-orange-500/10 text-orange-600 dark:text-orange-400 text-[10px] font-bold border border-orange-500/20">
                         <Shield className="w-3 h-3" />
-                        <span>SUPER_ADMIN</span>
+                        <span>{user?.role || 'SUPER_ADMIN'}</span>
                       </span>
                     </div>
                   </div>
@@ -256,7 +260,7 @@ export const SettingsPage: React.FC = () => {
                       <span className="flex items-center gap-2 text-slate-400 font-medium">
                         <Mail className="w-3.5 h-3.5" /> Email Address:
                       </span>
-                      <span className="font-mono font-medium">{user?.email || 'admin@adyapan.io'}</span>
+                      <span className="font-mono font-medium">{user?.email || 'ceo@adyapan.com'}</span>
                     </div>
 
                     <div className="flex items-center justify-between py-1 text-slate-600 dark:text-slate-300">

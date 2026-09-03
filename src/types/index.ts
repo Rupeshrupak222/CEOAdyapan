@@ -1,6 +1,6 @@
 export type EcosystemModule = 'dashboard' | 'crm' | 'lms' | 'hrms' | 'careers' | 'settings';
 
-export type UserRole = 'CEO' | 'Admin';
+export type UserRole = 'CEO' | 'Admin' | 'Co-Founder' | 'Head of IT' | 'TL';
 
 export interface UserProfile {
   id: string;

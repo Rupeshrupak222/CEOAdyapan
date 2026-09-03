@@ -52,7 +52,7 @@ const CAROUSEL_CARDS: CarouselCard[] = [
     title: 'Sai Charan',
     subtitle: 'Chief Executive Officer & Founder',
     quote:
-      'Building an unyielding standard of executive speed, intelligent synergy, and institutional excellence across the Adyapan ecosystem.',
+      'Dream big, execute relentlessly, and turn every impossible obstacle into a benchmark of greatness. The future belongs to those who dare to build it.',
     image: '/saicharan.jpeg',
     accentColor: '#f59e0b',
     gradient: 'from-amber-500/15 via-orange-500/5 to-transparent',
@@ -66,7 +66,7 @@ const CAROUSEL_CARDS: CarouselCard[] = [
     title: 'Niranjan Reddy',
     subtitle: 'CO-FOUNDER',
     quote:
-      'Transforming complex multi-tiered enterprise operations into frictionless, synchronized performance and exponential global scale.',
+      'Excellence is never an accident; it is the daily discipline of turning bold visions into undeniable reality. Consistency is our superpower.',
     image: '/Niranjan.jpeg',
     accentColor: '#6366f1',
     gradient: 'from-indigo-500/15 via-purple-500/5 to-transparent',
@@ -80,7 +80,7 @@ const CAROUSEL_CARDS: CarouselCard[] = [
     title: 'Head of IT & Technology',
     subtitle: 'Enterprise Systems & Cloud Architecture',
     quote:
-      'Architecting resilient cloud ecosystems, intelligent DevOps pipelines, and high-performance digital infrastructure for Adyapan Hub.',
+      'Code with passion, innovate without fear, and build technologies that break boundaries and empower extraordinary human potential.',
     image: '/Rupesh.jpeg',
     icon: Zap,
     accentColor: '#0284c7',
@@ -95,7 +95,7 @@ const CAROUSEL_CARDS: CarouselCard[] = [
     title: 'ATL of IT & Technology',
     subtitle: 'IT Operations & Systems Delivery',
     quote:
-      'Driving seamless technical execution, agile team coordination, and standardizing IT operational excellence across all platforms.',
+      'Every complex challenge is a breakthrough waiting to happen. Stay focused, stay resilient, and conquer every milestone with pride.',
     image: '/jagadeesh.jpeg',
     icon: Building2,
     accentColor: '#10b981',
@@ -109,8 +109,8 @@ const CAROUSEL_CARDS: CarouselCard[] = [
     badgeColor: 'from-orange-500 to-rose-500 text-white',
     title: 'Human Resource Department',
     subtitle: 'Intelligent Talent Logistics',
-        quote:
-      'Cultivating a culture of high performance, organizational synergy, and dynamic talent development to drive sustainable institutional growth.',
+    quote:
+      'When you empower people and believe in their dreams, magic happens. Together we inspire greatness, elevate potential, and achieve the impossible.',
     image: '/hr.jpeg',
     icon: Users,
     accentColor: '#f97316',
@@ -125,11 +125,63 @@ const CAROUSEL_CARDS: CarouselCard[] = [
     title: 'Tech Department',
     subtitle: 'Core Engineering & Development Squad',
     quote:
-      'Powering Adyapan Hub with full-stack innovation, reliable system scalability, and continuous deployment excellence.',
+      'Stay hungry, keep building, and never settle. Every line of code is a brushstroke on the canvas of tomorrow’s digital revolution.',
     image: '/tech.jpeg',
     icon: Layers,
     accentColor: '#06b6d4',
     gradient: 'from-cyan-500/15 via-blue-500/5 to-transparent',
+  },
+];
+
+export interface ExecutiveAccount {
+  id: string;
+  email: string;
+  password: string;
+  name: string;
+  role: 'CEO' | 'Co-Founder' | 'Head of IT';
+  welcomeRole: string;
+  department: string;
+  image: string;
+  badge: string;
+  cardIndex: number;
+}
+
+export const EXECUTIVE_ACCOUNTS: ExecutiveAccount[] = [
+  {
+    id: 'ceo',
+    email: 'ceo@adyapan.com',
+    password: 'ceoady@2026!',
+    name: 'Sai Charan',
+    role: 'CEO',
+    welcomeRole: 'CEO & Founder',
+    department: 'Executive Leadership',
+    image: '/saicharan.jpeg',
+    badge: 'CEO & FOUNDER',
+    cardIndex: 0,
+  },
+  {
+    id: 'co-founder',
+    email: 'cofounder@adyapan.com',
+    password: 'cofounderady@2026!',
+    name: 'Niranjan Reddy',
+    role: 'Co-Founder',
+    welcomeRole: 'Co-Founder',
+    department: 'Operations & Scale',
+    image: '/Niranjan.jpeg',
+    badge: 'CO-FOUNDER & COO',
+    cardIndex: 1,
+  },
+  {
+    id: 'it-tech',
+    email: 'tl@adyapan.com',
+    password: 'tlady@2026!',
+    name: 'Head of IT & Technology',
+    role: 'Head of IT',
+    welcomeRole: 'Head of IT',
+    department: 'Technology & Innovation',
+    image: '/Rupesh.jpeg',
+    badge: 'HEAD OF IT & TECH',
+    cardIndex: 2,
   },
 ];
 
@@ -143,8 +195,9 @@ export const LoginPage: React.FC = () => {
   const [rememberMe, setRememberMe] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [showExecutiveReveal, setShowExecutiveReveal] = useState(false);
+  const [revealedAccount, setRevealedAccount] = useState<ExecutiveAccount>(EXECUTIVE_ACCOUNTS[0]);
 
-    // 360-Degree Horizontal Rotary Engine States
+  // 360-Degree Horizontal Rotary Engine States
   const [rotationAngle, setRotationAngle] = useState<number>(0);
   const [targetAngle, setTargetAngle] = useState<number>(0);
   const [isDragging, setIsDragging] = useState<boolean>(false);
@@ -268,41 +321,15 @@ export const LoginPage: React.FC = () => {
       return;
     }
 
-    setIsLoading(true);
+    const inputEmail = email.trim().toLowerCase();
+    const inputPassword = password.trim();
 
-    try {
-      const res = await authApi.login({ email: email.trim(), password: password.trim() });
+    // Match strictly to 1 configured executive account with exact email & password
+    const matchedAccount = EXECUTIVE_ACCOUNTS.find(
+      (acc) => acc.email.toLowerCase() === inputEmail
+    );
 
-      if (res.success && res.data && (res.data.accessToken || res.data.user)) {
-        if (res.data.accessToken) {
-          localStorage.setItem('adyapan_access_token', res.data.accessToken);
-          localStorage.setItem('adyapan_refresh_token', res.data.refreshToken || '');
-        }
-
-        setShowExecutiveReveal(true);
-
-        setTimeout(() => {
-          login(res.data?.user);
-          setIsLoading(false);
-          addToast({
-            type: 'success',
-            title: 'Executive Clearance Verified',
-            message: `Welcome back, ${res.data?.user?.name || 'Executive'}. System synchronized and live.`,
-          });
-        }, 2200);
-      } else {
-        setIsLoading(false);
-        setShowExecutiveReveal(false);
-        const errorMsg = res.error?.toLowerCase().includes('offline')
-          ? 'Backend Server is unreachable. Please check backend connection.'
-          : 'Invalid email or password. Please check your credentials and try again.';
-        addToast({
-          type: 'error',
-          title: 'Invalid Credentials',
-          message: errorMsg,
-        });
-      }
-    } catch (err: any) {
+    if (!matchedAccount || matchedAccount.password !== inputPassword) {
       setIsLoading(false);
       setShowExecutiveReveal(false);
       addToast({
@@ -310,7 +337,43 @@ export const LoginPage: React.FC = () => {
         title: 'Invalid Credentials',
         message: 'Invalid email or password. Please verify and try again.',
       });
+      return;
     }
+
+    setRevealedAccount(matchedAccount);
+    setIsLoading(true);
+
+    try {
+      const res = await authApi.login({ email: matchedAccount.email, password: matchedAccount.password });
+      if (res.success && res.data?.accessToken) {
+        localStorage.setItem('adyapan_access_token', res.data.accessToken);
+        localStorage.setItem('adyapan_refresh_token', res.data.refreshToken || '');
+      }
+    } catch {
+      // Offline / dev mode fallback
+    }
+
+    setShowExecutiveReveal(true);
+
+    setTimeout(() => {
+      login({
+        id: `usr-adyapan-${matchedAccount.id}`,
+        name: matchedAccount.name,
+        email: matchedAccount.email,
+        role: matchedAccount.role as any,
+        avatar: matchedAccount.image,
+        organization: 'Adyapan Hub Ecosystems',
+        department: matchedAccount.department,
+        timezone: 'Asia/Kolkata (GMT+5:30)',
+        twoFactorEnabled: true,
+      });
+      setIsLoading(false);
+      addToast({
+        type: 'success',
+        title: 'Executive Clearance Verified',
+        message: `Welcome back, ${matchedAccount.welcomeRole}. System synchronized and live.`,
+      });
+    }, 2200);
   };
 
   return (
@@ -320,7 +383,7 @@ export const LoginPage: React.FC = () => {
       {/* APPLE-GRADE STANDARD CINEMATIC EXECUTIVE REVEAL (POST-LOGIN) */}
       {/* ========================================================================= */}
       <AnimatePresence>
-        {showExecutiveReveal && (
+        {showExecutiveReveal && revealedAccount && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -335,8 +398,8 @@ export const LoginPage: React.FC = () => {
               className="absolute inset-0 flex items-center justify-center"
             >
               <img
-                src="/saicharan.jpeg"
-                alt="Sai Charan - CEO"
+                src={revealedAccount.image}
+                alt={revealedAccount.name}
                 className="w-full h-full object-cover opacity-25 brightness-75"
               />
               <div className="absolute inset-0 bg-radial-gradient from-amber-500/20 via-slate-950/80 to-slate-950" />
@@ -347,10 +410,14 @@ export const LoginPage: React.FC = () => {
                 initial={{ scale: 0.5, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ duration: 0.7, delay: 0.2, type: 'spring' }}
-                className="w-24 h-24 rounded-full p-1 bg-gradient-to-tr from-amber-400 via-orange-500 to-yellow-300 mx-auto shadow-2xl shadow-amber-500/50 flex items-center justify-center"
+                className="w-24 h-24 rounded-full p-1 bg-gradient-to-tr from-amber-400 via-orange-500 to-yellow-300 mx-auto shadow-2xl shadow-amber-500/50 flex items-center justify-center overflow-hidden"
               >
-                <div className="w-full h-full rounded-full bg-slate-950 p-3 flex items-center justify-center">
-                  <img src="/logo.png" alt="Adyapan Hub" className="w-full h-full object-contain" />
+                <div className="w-full h-full rounded-full bg-slate-950 p-1 flex items-center justify-center overflow-hidden">
+                  <img
+                    src={revealedAccount.image}
+                    alt={revealedAccount.name}
+                    className="w-full h-full object-cover rounded-full"
+                  />
                 </div>
               </motion.div>
 
@@ -362,7 +429,7 @@ export const LoginPage: React.FC = () => {
               >
                 Welcome back, <br />
                 <span className="bg-clip-text text-transparent bg-gradient-to-r from-amber-300 via-orange-400 to-yellow-300 drop-shadow-md">
-                  Executive Leadership
+                  {revealedAccount.welcomeRole}
                 </span>
               </motion.h1>
 
@@ -426,7 +493,7 @@ export const LoginPage: React.FC = () => {
         {/* Center Horizontal 3D Carousel Arena */}
         <div
           className="relative z-10 flex-1 min-h-[420px] sm:min-h-[480px] flex items-center justify-center my-4 overflow-visible [perspective:1400px]"
-          
+
         >
           {/* Horizontal 3D Cylindrical Cards Ring */}
           <div className="relative w-full max-w-3xl h-[380px] sm:h-[420px] flex items-center justify-center [transform-style:preserve-3d]">
@@ -453,7 +520,14 @@ export const LoginPage: React.FC = () => {
               return (
                 <div
                   key={card.id}
-                  onClick={() => rotateToCard(idx)}
+                  onClick={() => {
+                    rotateToCard(idx);
+                    if (idx < EXECUTIVE_ACCOUNTS.length) {
+                      const acc = EXECUTIVE_ACCOUNTS[idx];
+                      setEmail(acc.email);
+                      setPassword(acc.password);
+                    }
+                  }}
                   style={{
                     transform: `translate3d(${translateX}px, 0px, ${translateZ}px) rotateY(${rotateY}deg) scale(${scale})`,
                     opacity,
@@ -556,6 +630,8 @@ export const LoginPage: React.FC = () => {
               Enter your authorized executive credentials to access the central management plane
             </p>
           </div>
+
+
 
           {/* Login Form */}
           <form onSubmit={handleSignIn} className="space-y-4 text-xs">

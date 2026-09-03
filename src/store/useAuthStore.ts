@@ -12,7 +12,7 @@ interface AuthState {
 const defaultCEOUser: UserProfile = {
   id: 'usr-adyapan-ceo',
   name: 'Sai Charan',
-  email: 'ceo@adyapan.io',
+  email: 'ceo@adyapan.com',
   role: 'CEO',
   avatar: '/saicharan.jpeg',
   organization: 'Adyapan Hub Ecosystems',

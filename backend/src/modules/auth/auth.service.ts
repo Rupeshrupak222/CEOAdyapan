@@ -20,45 +20,113 @@ export class AuthService {
     // Check if user exists in database, or initialize root CEO if DB is pristine
     let user = await this.prisma.user.findUnique({ where: { email } }).catch(() => null);
 
-    // Initial CEO provision fallback if DB is empty
-    if (!user && (email === 'ceo@adyapan.io' || email === 'admin@adyapan.io')) {
-      const passwordHash = await bcrypt.hash('••••••••••••', 10);
-      try {
-        user = await this.prisma.user.create({
-          data: {
+    // Strictly enforce 1 Email and 1 Password per executive role
+    const normalizedEmail = email.toLowerCase().trim();
+    let expectedPassword = '';
+
+    if (normalizedEmail === 'ceo@adyapan.com') {
+      expectedPassword = 'ceoady@2026!';
+      if (!user) {
+        const passwordHash = await bcrypt.hash(expectedPassword, 10);
+        try {
+          user = await this.prisma.user.create({
+            data: {
+              name: 'Sai Charan',
+              email: 'ceo@adyapan.com',
+              passwordHash,
+              role: Role.SUPER_ADMIN,
+              department: 'Executive Leadership',
+              avatar: '/saicharan.jpeg',
+            },
+          });
+        } catch {
+          user = {
+            id: 'usr-adyapan-ceo',
             name: 'Sai Charan',
-            email: email,
+            email: 'ceo@adyapan.com',
             passwordHash,
             role: Role.SUPER_ADMIN,
+            isActive: true,
+            avatar: '/saicharan.jpeg',
             department: 'Executive Leadership',
-          },
-        });
-      } catch {
-        // Mock fallback object if direct DB connect is deferred
-        user = {
-          id: 'usr-adyapan-ceo',
-          name: 'Sai Charan',
-          email,
-          passwordHash,
-          role: Role.SUPER_ADMIN,
-          isActive: true,
-          avatar: null,
-          department: 'Executive Leadership',
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        };
+            createdAt: new Date(),
+            updatedAt: new Date(),
+          };
+        }
       }
+    } else if (normalizedEmail === 'cofounder@adyapan.com') {
+      expectedPassword = 'cofounderady@2026!';
+      if (!user) {
+        const passwordHash = await bcrypt.hash(expectedPassword, 10);
+        try {
+          user = await this.prisma.user.create({
+            data: {
+              name: 'Niranjan Reddy',
+              email: 'cofounder@adyapan.com',
+              passwordHash,
+              role: Role.ADMIN,
+              department: 'Operations & Scale',
+              avatar: '/Niranjan.jpeg',
+            },
+          });
+        } catch {
+          user = {
+            id: 'usr-adyapan-cofounder',
+            name: 'Niranjan Reddy',
+            email: 'cofounder@adyapan.com',
+            passwordHash,
+            role: Role.ADMIN,
+            isActive: true,
+            avatar: '/Niranjan.jpeg',
+            department: 'Operations & Scale',
+            createdAt: new Date(),
+            updatedAt: new Date(),
+          };
+        }
+      }
+    } else if (normalizedEmail === 'tl@adyapan.com') {
+      expectedPassword = 'tlady@2026!';
+      if (!user) {
+        const passwordHash = await bcrypt.hash(expectedPassword, 10);
+        try {
+          user = await this.prisma.user.create({
+            data: {
+              name: 'Head of IT & Technology',
+              email: 'tl@adyapan.com',
+              passwordHash,
+              role: Role.ADMIN,
+              department: 'Technology & Innovation',
+              avatar: '/Rupesh.jpeg',
+            },
+          });
+        } catch {
+          user = {
+            id: 'usr-adyapan-tl',
+            name: 'Head of IT & Technology',
+            email: 'tl@adyapan.com',
+            passwordHash,
+            role: Role.ADMIN,
+            isActive: true,
+            avatar: '/Rupesh.jpeg',
+            department: 'Technology & Innovation',
+            createdAt: new Date(),
+            updatedAt: new Date(),
+          };
+        }
+      }
+    } else {
+      throw new UnauthorizedException('Invalid credentials');
     }
 
     if (!user || !user.isActive) {
       throw new UnauthorizedException('Invalid credentials or inactive account');
     }
 
-    // Compare password (also accept default development passwords)
-    const isMatch = await bcrypt.compare(password, user.passwordHash).catch(() => false);
-    const validDevPasswords = ['••••••••••••', 'admin123', 'adyapan2026', 'Adyapan@2026', 'Admin@123'];
-    if (!isMatch && !validDevPasswords.includes(password)) {
-      // Audit log failed login
+    // Strictly match only the exact password for this account
+    const isBcryptMatch = await bcrypt.compare(password, user.passwordHash).catch(() => false);
+    const isDirectMatch = password === expectedPassword;
+
+    if (!isBcryptMatch && !isDirectMatch) {
       await this.logAudit('FAILED_LOGIN', user.id, ipAddress, userAgent, { email });
       throw new UnauthorizedException('Invalid credentials');
     }

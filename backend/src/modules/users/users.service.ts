@@ -21,10 +21,32 @@ export class UsersService {
     }).catch(() => null);
 
     if (!user) {
+      if (userId.includes('cofounder') || userId.includes('niranjan')) {
+        return {
+          id: userId,
+          name: 'Niranjan Reddy',
+          email: 'cofounder@adyapan.com',
+          role: Role.ADMIN,
+          department: 'Operations & Scale',
+          avatar: '/Niranjan.jpeg',
+          createdAt: new Date(),
+        };
+      }
+      if (userId.includes('tl') || userId.includes('rupesh') || userId.includes('headofit')) {
+        return {
+          id: userId,
+          name: 'Head of IT & Technology',
+          email: 'tl@adyapan.com',
+          role: Role.ADMIN,
+          department: 'Technology & Innovation',
+          avatar: '/Rupesh.jpeg',
+          createdAt: new Date(),
+        };
+      }
       return {
         id: userId,
         name: 'Sai Charan',
-        email: 'ceo@adyapan.io',
+        email: 'ceo@adyapan.com',
         role: Role.SUPER_ADMIN,
         department: 'Executive Leadership',
         avatar: '/saicharan.jpeg',
@@ -44,6 +66,7 @@ export class UsersService {
           role: true,
           isActive: true,
           department: true,
+          avatar: true,
           createdAt: true,
         },
       });
@@ -52,10 +75,31 @@ export class UsersService {
         {
           id: 'usr-adyapan-ceo',
           name: 'Sai Charan',
-          email: 'ceo@adyapan.io',
+          email: 'ceo@adyapan.com',
           role: Role.SUPER_ADMIN,
           isActive: true,
           department: 'Executive Leadership',
+          avatar: '/saicharan.jpeg',
+          createdAt: new Date(),
+        },
+        {
+          id: 'usr-adyapan-cofounder',
+          name: 'Niranjan Reddy',
+          email: 'cofounder@adyapan.com',
+          role: Role.ADMIN,
+          isActive: true,
+          department: 'Operations & Scale',
+          avatar: '/Niranjan.jpeg',
+          createdAt: new Date(),
+        },
+        {
+          id: 'usr-adyapan-tl',
+          name: 'Head of IT & Technology',
+          email: 'tl@adyapan.com',
+          role: Role.ADMIN,
+          isActive: true,
+          department: 'Technology & Innovation',
+          avatar: '/Rupesh.jpeg',
           createdAt: new Date(),
         },
       ];

@@ -102,8 +102,12 @@ export const Header: React.FC = () => {
             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
             className="flex items-center gap-2.5 p-1.5 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-800/80 transition-all cursor-pointer group"
           >
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-orange-500 to-amber-600 text-white font-black text-xs flex items-center justify-center shadow-sm">
-              {user?.name?.[0] || 'A'}
+            <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-orange-500 to-amber-600 text-white font-black text-xs flex items-center justify-center shadow-sm overflow-hidden border border-orange-400/20">
+              {user?.avatar ? (
+                <img src={user.avatar} alt={user.name} className="w-full h-full object-cover" />
+              ) : (
+                user?.name?.[0] || 'A'
+              )}
             </div>
             <div className="hidden md:block text-left">
               <div className="text-xs font-bold text-slate-900 dark:text-white leading-tight flex items-center gap-1">
@@ -111,7 +115,7 @@ export const Header: React.FC = () => {
                 <ChevronDown className={`w-3 h-3 text-slate-400 transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''}`} />
               </div>
               <div className="text-[10px] text-slate-400 font-medium">
-                {user?.email || 'admin@adyapan.io'}
+                {user?.email || 'ceo@adyapan.com'}
               </div>
             </div>
           </button>
@@ -121,19 +125,23 @@ export const Header: React.FC = () => {
             <div className="absolute right-0 mt-2 w-64 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl py-2 z-[99999] animate-in fade-in slide-in-from-top-2 duration-150">
               {/* User Header Summary */}
               <div className="px-4 py-3 border-b border-slate-100 dark:border-slate-800/80 flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-orange-500 to-amber-600 text-white font-black text-sm flex items-center justify-center shadow-md shadow-orange-500/20 shrink-0">
-                  {user?.name?.[0] || 'A'}
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-orange-500 to-amber-600 text-white font-black text-sm flex items-center justify-center shadow-md shadow-orange-500/20 shrink-0 overflow-hidden border border-orange-400/20">
+                  {user?.avatar ? (
+                    <img src={user.avatar} alt={user.name} className="w-full h-full object-cover" />
+                  ) : (
+                    user?.name?.[0] || 'A'
+                  )}
                 </div>
                 <div className="truncate">
                   <div className="text-xs font-black text-slate-900 dark:text-white truncate">
                     {user?.name || 'Sai Charan'}
                   </div>
                   <div className="text-[11px] text-slate-400 font-mono truncate">
-                    {user?.email || 'admin@adyapan.io'}
+                    {user?.email || 'ceo@adyapan.com'}
                   </div>
                   <span className="mt-1 inline-flex items-center gap-1 px-2 py-0.5 rounded text-[9px] font-bold bg-orange-500/10 text-orange-600 dark:text-orange-400 border border-orange-500/20">
                     <ShieldCheck className="w-2.5 h-2.5" />
-                    SUPER_ADMIN
+                    {user?.role || 'SUPER_ADMIN'}
                   </span>
                 </div>
               </div>
